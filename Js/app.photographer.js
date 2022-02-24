@@ -552,27 +552,5 @@ function generateMediaLightBoxLinks(){
 		}
 	})
 }
-main()
 
-
-class A {
-	constructor(){
-		this.x = [0,1,2,3];
-	}
-	addEventListenner(a,v){
-		switch(a){
-			case "click" : this.x[0] = v; break;
-			case "keydown" : this.x[1] = v; break;
-			case "keyup" : this.x[2] = v; break;
-		}
-	}
-	
-	set onclick(v){ this.addEventListenner("click",v)}
-
-
-
-}
-
-let element = new A();
-element.addEventListenner("click", 5);
-element.onclick = 5;
+window.onload = main;

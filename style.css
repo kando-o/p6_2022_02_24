@@ -1,13 +1,3 @@
-*, ::before, ::after{
-    box-sizing: border-box;
-    padding: 0px;
-    margin: 0px;
-}
-
-
-body{
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
 header {
     position: relative;
     padding-top: 2rem;
