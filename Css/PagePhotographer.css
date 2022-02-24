@@ -1,0 +1,406 @@
+*, ::before, ::after{
+    box-sizing: border-box;
+    padding: 0px;
+    margin: 0px;
+}
+
+body{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+.logo img{
+    padding: 2em 4em;
+}
+.container{
+    width: 97%;
+    margin: auto;
+    /* box-shadow: 0 1px 6px rgba(245, 2, 2, 0.192); */
+}
+.bgFormulaire{
+    /* visibility: hidden; */
+    display: none;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0; 
+    right: 0; 
+    bottom: 0; 
+    left: 0; 
+    background: #333333d3;
+    /* z-index: 97; */
+}
+.formulaire{
+    display: none;
+    position: fixed;
+    width: 40em;
+    min-width: 320px;
+    height: 43em;
+    margin: 1rem auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: salmon;
+    border-radius: 1em;
+    box-shadow: 2px 2px 10px rgba(2, 2, 2, 0.726);
+    z-index: 99;
+}
+.modal_merci{
+    display: none;
+    position: relative;
+    width: 40em;
+    height: 43em;
+    margin: 1rem auto;
+    background-color: salmon;
+    border-radius: 1em;
+    box-shadow: 2px 2px 10px rgba(2, 2, 2, 0.726);
+    z-index: 100;
+}
+.close-modal-merci::after,
+.close-modal-merci::before {
+    position:absolute;
+    top: 2rem;
+    right: 2rem;
+    content: "";
+    height: 2.5rem;
+    width: .3rem;
+    background-color: #fff;
+    cursor: pointer;
+}
+.close-modal-merci::before {
+    transform: rotate(45deg);
+}
+.close-modal-merci::after {
+  transform: rotate(-45deg);
+}
+.modal_merci p{
+    text-align: center;
+    position: relative;
+    font-size: 1.5em;
+    top: 25rem;
+    color: white;
+}
+.btn-merci{
+    position: relative;
+    display: block;
+    top: 30rem;
+    width: 25%;
+    padding: .6em;
+    font-size: 1.5em;
+    color: whitesmoke;
+    margin: 0 auto;
+    background-color: darkred;
+    border-radius: .2em;
+    border: none;
+    cursor: pointer;
+}
+
+.champInputText-invalid{
+    box-shadow: red 4px 4px 5px;
+}
+.mesgErrorPrenom,
+.mesgErrorNom,
+.mesgErrorEmail{
+    color: red;
+    margin-left: 2rem;
+    font-size: 1.2rem;
+}
+.champInputText-valid{
+    box-shadow: green 4px 4px 5px;
+}
+.titre_formulaire{
+    margin: .5em 2em
+}
+.titre_formulaire h3{
+    font-size: 3.5em;
+    font-weight: 100;
+}
+.formulaire input{
+    display: flex;
+    flex-direction: row;
+    width: 90%;
+    font-size: 2em;
+    border: none;
+    outline: none;
+    border-radius: .1em;
+    margin: .1em auto;
+}
+.formulaire label{
+    font-size: 1.5em;
+    margin: 1.3em ;
+    color: rgb(82, 82, 82);
+}
+.formulaire textarea{
+    width: 90%;
+    margin-left : 2.5em;
+    border-radius: .5em;
+    outline: none;
+    border: none;
+    resize: none;
+}
+.submit{
+    display: block;
+    width: 25%;
+    padding: .6em;
+    font-size: 1.5em;
+    color: whitesmoke;
+    margin: 1em 1.4em;
+    background-color: darkred;
+    border-radius: .2em;
+    border: none;
+    cursor: pointer;
+}
+.btnFormulaireClose{
+    border: none;
+}
+.btnFormulaireClose::before, 
+.btnFormulaireClose::after{
+    position: absolute;
+    content: " ";
+    right:  3em;
+    top: 2em;
+    width: .4em;
+    height: 3em;
+    background-color: whitesmoke;
+    cursor: pointer;
+}
+.btnFormulaireClose::after{
+    transform: rotate(-40deg);
+}
+.btnFormulaireClose::before{
+    transform: rotate(40deg);
+}
+.bloc_top{
+    width: 95%;
+    margin: 2em;
+}
+.bloc_top img{
+    height: 12em;
+    border-radius: 50%;
+    width: 12em;
+    margin: 2em 0em;
+    object-fit: cover;
+}
+.infoPhotograper{
+    padding: 2rem
+}
+.infoPhotograper h1{
+    color:#d3573c;
+    font-size: 5em;
+}
+.infoPhotograper p{
+    color:#d3573c;
+}
+.infoPhotograper p:nth-child(2){
+    color:#901C1C ;
+    font-size: 1.5em;
+}
+.infoPhotograper p:nth-child(3){
+    color: rgb(80, 80, 80) ;
+    font-size: 1.2em;
+    line-height: 3rem;
+}
+.card_Photographer{
+    display: flex;
+    flex-wrap: wrap;
+    height: fit-content;
+    justify-content: space-between;
+    background-color: whitesmoke;
+    /* box-shadow: 0 1px 6px rgba(0, 0, 0, .5); */
+}
+.card_Photographer button{
+    align-self: center;
+    padding: 1.2em;
+    border-radius: .5em;
+    border: none;
+    background-color: darkred;
+    color: whitesmoke;
+    font-size: 1.7em;
+    margin-right: 5em;
+}
+.card_Photographer button:hover{
+    transition: 1s;
+    color: black;
+    background-color: salmon;
+}
+.trieAll{
+    display: flex;
+    margin-left: 3em;
+}
+.trieAll select{
+    color: whitesmoke;
+    width: 10em;
+    margin-left:2em;
+    list-style: none;
+    background-color: darkred;
+    padding: 1em;
+    border-radius: .5em;
+}
+.trieAll option{
+    color: whitesmoke;
+    font-size: 1.2em;
+    border-bottom: 1px solid whitesmoke;
+    padding: 1em;
+}
+/* .trie option[value]{   
+     color:red;
+} */
+.trieAll li:nth-child(3){
+    border-bottom: none;
+}
+
+.galerie_Photographer{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    width: 90%;
+    max-width: 1700px;
+    min-width: 300px;
+    margin: 3em auto;
+    /* box-shadow: 0 1px 6px rgba(0, 0, 0, .5); */
+
+}
+
+.card_galerieMaster{
+    width: 390px;
+    height: 420px;
+    margin: 1em auto;
+    border-radius: 1rem;
+    /* box-shadow: 0 1px 6px rgba(145, 28, 28, 0.5); */
+}
+.card_galerie{
+    
+    width: 390px;
+    height: 365px;
+    margin: 0 auto;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, .5);
+    border-radius: 1.5em;
+    overflow: hidden;
+}
+.card_galerie img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top;
+
+}
+
+.card_galerie video{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+.titre_photo{
+    display: flex;
+    justify-content: space-between;
+}
+.titre_photo p {
+    margin: 1em .1em;
+    color: #901C1C;
+}
+.prix{
+    position: fixed;
+    display: flex;
+    justify-content: space-between;
+    width: 17em;
+    font-size: 2em;
+    margin: 0 2em;
+    border-radius: .5em .5em 0 0;
+    bottom: 0em;
+    right: 0em;
+    padding: .7em;
+    background-color: salmon;
+    z-index: 95;
+}
+
+.lightBox{
+    display: none;
+    position: fixed;
+    width: 100%; /*Pour prendre tout l'écran*/
+    height: 100%;/*Pour prendre tout l'écran*/
+    top: 0;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    background: linear-gradient(45deg, #333, #000 );
+    z-index: 102;
+}
+
+.btn-closeLightBox{
+    position: absolute;
+    top: 3%;
+    right: 3%;
+    height: 70px;
+    width: 70px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    color: whitesmoke;
+    background-color: #000;
+    border-radius: 50%;
+    font-size: 1.5em;
+    border: whitesmoke 1px solid;
+
+}
+.btnSlide--left,
+.btnSlide--right{
+    position: absolute;
+    height: 70px;
+    width: 70px;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    color: #000;
+    border-radius: 50%;
+    border: whitesmoke 1px solid;
+    background-color: rgb(255, 255, 255);
+    top: 50%; 
+    transform: translateY(-50%);
+    display: flex; /*pour centrer les images à l'interieur*/
+    justify-content: center;/*pour centrer les images à l'interieur*/
+    align-items: center;/*pour centrer les images à l'interieur*/
+}
+.btnSlide--right{
+    right: 2em;
+}
+.btnSlide--left{
+    left: 2em;
+}
+.img-visible-lightBox{
+    position: absolute;
+    width: 60%;
+    height: 600px;
+    object-fit: contain;
+    object-position: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 14;
+}
+.video_visible_lightBox{
+    display: block;
+    position: absolute;
+    width: 60%;
+    height: fit-content;
+    object-fit: contain;
+    object-position: center;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 16;
+}
+@media screen and ( max-width: 700px){
+    .img-visible-lightBox{
+        width: 95%;
+        height: 500px;
+    }
+    .btnSlide--left,
+    .btnSlide--right{
+        height: 50px;
+        width: 50px;
+    }
+    .btn-closeLightBox{
+        height: 50px;
+        width: 50px;
+        font-size: 1rem;
+    }
+}
