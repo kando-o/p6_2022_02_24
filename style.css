@@ -1,29 +1,25 @@
+body{
+    max-width: 1500px;
+    margin: 0 auto;
+}
 header {
+    width: 97%;
     position: relative;
     padding-top: 2rem;
-    font-weight: 600;
 }
 .logo img{
     width: 11em;
     margin-left: 2em;
 }
-
-.contenu{
-    position: absolute;
-    top: .5em;
-    left: 50%;    
-    transform: translate(-50%);
-    width: 11em;
-    text-align: center;
-    text-decoration: none;
-    list-style: none;
-    border-radius: .2em;
-    color: black;
-    background-color: chocolate;
+.logo img:hover{
+    border-bottom: #901c1c solid;
 }
-.contenu:hover{
-    border: 1px black solid;
+@media screen and (max-width: 500px) {
+    .logo img{
+        width: 7rem;
+    }
 }
+    
 .titre_principal{
     position: absolute;
     right: 5%;
@@ -31,6 +27,27 @@ header {
     font-size: 2em;
     font-weight: 600;
     color: #901c1c;
+}
+@media screen and (max-width: 425px) {
+    .titre_principal{
+        font-size: 1.1rem;
+    }
+}
+@media screen and (max-width: 720px) {
+    .titre_principal{
+        font-size: 1rem;
+        min-width: 12rem;
+        left: 50%; 
+        transform: translate(-50%, -50%);
+        text-align: center;
+        margin: 5rem auto;
+        color: #901c1c;
+    }
+}
+@media only screen and (min-width: 500px) and ( max-width: 820px) {
+    .cartePhotographer {
+        width: 276px;
+    }
 }
 
 #main{

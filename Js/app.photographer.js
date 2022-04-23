@@ -1,29 +1,15 @@
-// NB : 
-//	change une chaine de caractere en entier **+string**
-
-//Recuperer l'ID
-//REcuperer les donées
-//Recuperer les photographers
-//Recuperer les medias
-
-// Lecture 1 :
-// -> - initialisation Données
-//	  - création du html
-
-// Lecture 2 :
-//	-> EventListenners (clicks)
-//	  - mise à jour spécifiques
 /**
- * @returns {Array : photgraphers, media} en premier
- * @returns {localStorage} puis en second
+ * @description Load Database from localStorage (if exists) then from file * data.json *
+ * @returns {Array} | 1.get fetch data.json if * ls * missing
+ * @returns {Array} | 2.get load local storage if present 
  */
 function getData() {
     let ls = localStorage.getItem("data");
-    if (ls){ return JSON.parse(ls)} // Transform l'argument en chaine et renvoie un entier ou Nan
+    if (ls){ return JSON.parse(ls)} // Convertit l'argument JSON en chaine JS ou en Objet
     return fetch(`/data.json`)
     .then( res => res.json())
 	.then(res => {
-		localStorage.setItem("data", JSON.stringify(res));
+		localStorage.setItem("data", JSON.stringify(res)); // Convertie l'argument JS en Json
 		return res;
 	})
     .catch(function(error) {
@@ -34,22 +20,23 @@ var IDPHOTOGRAPHER = -1;
 var PHOTOGRAPHER = null;
 var ARRAY_MEDIAS = [];
 /**
- * @argument {} ID | qui contien l'id du photographe selectionner
+ * @description Qui contien l'id du photographe selectionner
+ * @return {string}  | IDPHOTOGRAPHER 
  */
 function getParamID(){
 	// url parameters
 	const urlURL = new URL(location.href);
 	// extract "id" from parameters
 	IDPHOTOGRAPHER = parseInt(urlURL.searchParams.get('id')); // Transform l'argument en chaine et renvoie un entier ou Nan
-	console.log( "Id du photographe selectionner" + " = " + IDPHOTOGRAPHER);
 	return IDPHOTOGRAPHER;
 }
 /**
- * @function {} Data |  ID -->  Array Photographer , ID --> Array Media
+ * @description Load Database from function getData  
+ * @returns {string, Array} | ID -->  Array Photographer , ID --> Array Media
  */
 async function loadData(){
 	// get datas from local storage or API
-    const datas = await getData()
+    const datas = await getData();
     console.log("Donées du data.json ="  , datas);
 	// get photographer by its id
     PHOTOGRAPHER = datas.photographers.find(element => {
@@ -59,24 +46,20 @@ async function loadData(){
     ARRAY_MEDIAS = datas.media.filter((media) => media.photographerId == IDPHOTOGRAPHER);
 }
 
-async function main() {
-	getParamID();
-	await loadData();
-	initLightBox();
-	generateLightBoxEvents();
-	render();
-	formulaire(PHOTOGRAPHER)
-	generateMediaLightBoxLinks();
-}
-async function formulaire() {
-	await getData()
-			//Bouton Formulaire
+/**
+ * @description Formulaire validation of the writed field Prénom, Nom, Email.
+ */
+function formulaire() {
+	//Bouton Formulaire
 	const bgFormulaire = document.querySelector('.bgFormulaire');
 	const formulaireContacte = document.querySelector('.formulaire');
 	const btnContactPhotographer = document.querySelector('.btn_ContactPhotographer');
 	const btnFormulaireClose = document.querySelector('.btnFormulaireClose');
-
+	/**
+	 * @description 4 event for close the modal formulaire
+	 */
 	btnFormulaireClose.nextElementSibling.innerHTML = `${PHOTOGRAPHER.name}`;
+
 	btnContactPhotographer.addEventListener('click', () => {
 		bgFormulaire.style.display = "block";
 		formulaireContacte.style.display = "block";
@@ -88,10 +71,12 @@ async function formulaire() {
 	})
 	formulaireContacte.addEventListener('keydown', (e) => {
 		if (e.keyCode === 27) {
+			// 27 = espace
 			bgFormulaire.style.display = "none";
 			formulaireContacte.style.display = "none";
 		}
 	})
+	//close the modal onclick background
 	bgFormulaire.addEventListener('click', (e) => {
 		bgFormulaire.style.display = "none";
 		formulaireContacte.style.display = "none";
@@ -105,19 +90,21 @@ async function formulaire() {
 	const spanErrorPrenom = document.querySelector('.mesgErrorPrenom');
 	const spanErrorNom = document.querySelector('.mesgErrorNom');
 	const spanErrorEmail = document.querySelector('.mesgErrorEmail');
-	const submitForm = document.querySelector('.submit');
 	const closeModalMerci = document.querySelector('.close-modal-merci');
 	const modal_merci = document.querySelector('.modal_merci');
 	const btnMerci = document.querySelector('.btn-merci');
 	
+	/**
+	 * @description 3 events for regex in two parts
+	 * part 1 validation of the input
+	 * part 2 if input valid actived css or if is not valid error message 
+	 */
 	prenom.addEventListener('input', (e) => { 
-		let state = validation(prenom.value, spanErrorPrenom)
+		let state = validation(prenom.value)
 		OnValidation(prenom, state)
 		return state
 	})
 	nom.addEventListener('input', (e) => {
-		// let state = validation(nom.value, spanErrorNom)
-		// OnValidation(nom, state)
 		validationNom()
 	})
 	email.addEventListener('input', (e) => {
@@ -237,25 +224,35 @@ async function formulaire() {
 		console.log("formulaire close");
 	})	
 }
-// * @argument {function idGalerieMedia} | qui contien le media du photographe selectionner
-// * @argument {function initMedia} | qui init la galerie photo
-
+/**
+ * @description Render Of the page Photographer
+ */
 function render(){
 	// photographer profile
     initPhotographer(PHOTOGRAPHER);
     console.log(PHOTOGRAPHER);
 
-	// create drop down menus and overlay
-    initGadgets(PHOTOGRAPHER, ARRAY_MEDIAS);
-    console.log(ARRAY_MEDIAS);
+	// create overlay (total likes + price)
+	initOverlay(PHOTOGRAPHER);
+
+	// create sort butons
+	initDropdown();
+
+	//buton tri
+	initSortCategory();
 
 	// draw photographer's medias
-    ARRAY_MEDIAS.map(media => initGalerie(media, PHOTOGRAPHER))
-    // Resoudre contentPhotographer
+	initCards(PHOTOGRAPHER)
+
+	// create drop down menus and overlay
+    initLikes(PHOTOGRAPHER, ARRAY_MEDIAS);
 }
 
-async function initPhotographer(cardPhoto){
-    await getData()
+/**
+ * @description Photographer's card
+ * @param {Array} cardPhoto |  array with the infos of the photgrapher
+ */
+function initPhotographer(cardPhoto){
     document.querySelector('.contain_bloc_top').innerHTML += 
     `
         <div class="bloc_top">
@@ -271,9 +268,23 @@ async function initPhotographer(cardPhoto){
         </div> 
     `
 }
-
-async function initGadgets(photographe, medias){
-    await getData()
+/**
+ * @description Overlay of the price and the likes
+ * @param {Array} cardPhoto |  array with the infos of the photgrapher
+ */
+function initOverlay(photographe){
+	document.querySelector('.contain_galeriePhoto').innerHTML += 
+    `
+		<div class="prix">  
+			<p class="likesTotal"><i class="fas fa-heart"></i></p>
+			<p>${photographe.price}€/jr </p>
+		</div>
+	`
+}
+/**
+ * @description sort tab
+ */
+function initDropdown() {
 
     document.querySelector('.contain_galeriePhoto').innerHTML += 
     `
@@ -288,12 +299,92 @@ async function initGadgets(photographe, medias){
 				</label>
 			</p>
 		</div>
-
-		<div class="prix">  
-			<p class="likesTotal"><i class="fas fa-heart"></i>0</p>
-			<p>${photographe.price}€/jr </p>
-		</div>
     `
+}
+/**
+ * @description Function of diferant filters
+ */
+function initSortCategory() {
+	const filter = new Filter();
+
+	let trieAll = document.querySelector('.trieAll'),
+		popularite = document.querySelector('.popularite'),
+		titre = document.querySelector('.titre'),
+		date = document.querySelector('.date'),
+		ls = localStorage.getItem("categorie");
+
+
+	trieAll.lastItem = null;
+	trieAll.addEventListener('click', (e) => {
+		e.preventDefault();
+		e.stopPropagation();
+		console.log("clickCatAll", e.target.value);
+		let lsTrie = localStorage.getItem("data")
+
+		if (e.target.value!=trieAll.lastItem){
+			if (e.target.value == "Popularité") {
+				filter.SortByPopularity();
+				console.log( "trieAll -> clic popu");
+				// localStorage.setItem("data", )
+
+			} else if (e.target.value == "Date") {
+				filter.SortByDate();
+				console.log( "trieAll -> clic date");
+			} else if (e.target.value == "Titre") {	
+				filter.SortByTitle();
+				console.log( "trieAll -> clic titre");
+			}
+			trieAll.lastItem = e.target.value;
+		}
+	})
+} 
+
+class Filter {
+	SetCardsOrders( orders) {
+		let x = 0; orders.map(d => d.elem.style.order = x++ )
+	}
+	SortByPopularity(){
+		let elems = document.querySelectorAll(".card_galerieMaster");
+		let array = [...elems]; // spread operator
+		array.map(a => {
+			let id = a.id.split("_")[1];
+			let likes = document.getElementById(id);
+			a.likes = +likes.textContent;
+		})
+		array.sort( (a,b)=> { return b.likes - a.likes; })
+		let orders = array.map(a => {return {elem : a}});
+		this.SetCardsOrders(orders);
+	}
+	
+	SortByDate(){
+		let elems = document.querySelectorAll(".card_galerieMaster");
+		let array = [...elems];
+		let a1 = array.map(a => a.date);
+		let array2 = array.sort( (a,b)=> { return new Date(b.date)-new Date(a.date) })
+		let a2 = array2.map(a => a.date);
+		let orders = [];
+		this.SetCardsOrders(orders);
+	}
+	SortByTitle(){
+		let elems = document.querySelectorAll(".card_galerieMaster");
+		let array = [...elems];
+		// array.sort( (a,b)=> { a.title ... b.title }); 
+		let orders = array.map(a => {return {elem : a}});
+		this.SetCardsOrders(orders);
+	}
+}
+
+
+/**
+ * @description Init card of photographers
+ * @param {*} photographe 
+ */
+function initCards(photographe){
+    ARRAY_MEDIAS.map(media => createCard(media, photographe))
+}
+
+function initLikes(photographe, medias){
+
 		// Like Globale
 
     let likes = 0;
@@ -303,7 +394,7 @@ async function initGadgets(photographe, medias){
 	
 	// Fonction Like
 	function UpdateOverlayLikes(count){
-		likesTotal.innerHTML = `<p>love ${count}</p>`
+		likesTotal.innerHTML = `<p>${count} <i class="fas fa-heart"></i></p>`
 	};
 	medias.map(media => {
 		likes += media.likes
@@ -312,6 +403,7 @@ async function initGadgets(photographe, medias){
 	likesGlobal = likes;
 
 	UpdateOverlayLikes(likesGlobal);
+	console.log("add events for picture", clickLike);
 
 	clickLike.forEach(el =>  {
 		el.addEventListener('click', () => {
@@ -321,6 +413,7 @@ async function initGadgets(photographe, medias){
 			console.log('clickLove', likesGlobal,likesCount.textContent);
 		})
 	});
+
 	function UpdateLike(elem){
 
 		let id = elem.id;
@@ -334,7 +427,7 @@ async function initGadgets(photographe, medias){
 		}else{
 			let likes = JSON.parse(ls);
 			let value = 1;
-			// media already likes = dislike (remove from localStorage)
+			// media already liked = dislike (remove from localStorage)
 			if (likes.find(pId=>pId==id)){
 				likes = likes.filter(pId => pId!=id)
 				value = -1;
@@ -349,88 +442,23 @@ async function initGadgets(photographe, medias){
 		}
 	}
 
-	async function trieCategorie() {
-		await getData()
-		let trieAll = document.querySelector('.trieAll'),
-			popularite = document.querySelector('.popularite'),
-			titre = document.querySelector('.titre'),
-			date = document.querySelector('.date'),
-			ls = localStorage.getItem("categorie");
-
-		console.log(trieAll);
-		// Utiliser le localStorage pour spliter celui ci et recharger la page à chaque categorie selectionner  ou mthode sort() pour trier les clés.
-
-		trieAll.lastItem = null;
-		trieAll.addEventListener('click', (e) => {
-			e.preventDefault();
-			e.stopPropagation();
-			console.log("clickCatAll", e.target.value);
-			let lsTrie = localStorage.getItem("data")
-			if (e.target.value!=trieAll.lastItem){
-				if (e.target.value == "Popularité") {
-					SortByPopularity();
-					console.log( "trieAll -> clic popu");
-					// localStorage.setItem("data", )
-
-				} else if (e.target.value == "Date") {
-					SortByDate();
-					console.log( "trieAll -> clic date");
-				} else if (e.target.value == "Titre") {	
-					SortByTitle();
-					console.log( "trieAll -> clic titre");
-				}
-				trieAll.lastItem = e.target.value;
-			}
-		})
-	}
-	trieCategorie()
-}
-function SetCardsOrders( orders) {
-	let x = 0; orders.map(d => d.elem.style.order = x++ )
-}
-function SortByPopularity(){
-	let elems = document.querySelectorAll(".card_galerieMaster");
-	let array = [...elems]; // spread operator
-	array.map(a => {
-		let id = a.id.split("_")[1];
-		let likes = document.getElementById(id);
-		a.likes = +likes.textContent;
-	})
-	array.sort( (a,b)=> { return b.likes - a.likes; })
-	let orders = array.map(a => {return {elem : a}});
-	SetCardsOrders(orders);
 }
 
-function SortByDate(){
-	let elems = document.querySelectorAll(".card_galerieMaster");
-	let array = [...elems];
-	let a1 = array.map(a => a.date);
-	let array2 = array.sort( (a,b)=> { return new Date(b.date)-new Date(a.date) })
-	let a2 = array2.map(a => a.date);
-	let orders = [];
-	SetCardsOrders(orders);
-}
-function SortByTitle(){
-	let elems = document.querySelectorAll(".card_galerieMaster");
-	let array = [...elems];
-	// array.sort( (a,b)=> { a.title ... b.title }); 
-	let orders = array.map(a => {return {elem : a}});
-	SetCardsOrders(orders);
-}
-function initGalerie(galerieMedia, idPhoto) {
+function createCard(galerieMedia, idPhoto) {
     let objMedia = "";
+
 	let elemMaster = document.createElement('div');
 	elemMaster.id = "id_"+galerieMedia.id;
 	elemMaster.date = galerieMedia.date;
 	elemMaster.Title = galerieMedia.title;
 	elemMaster.classList.add('card_galerieMaster');
-
+	
     if (galerieMedia.hasOwnProperty('image')) {
 		objMedia = `<img src="/Sample_Photos/${idPhoto.name}/${galerieMedia.image}" alt="${galerieMedia.alt}">`;
 	} else if (galerieMedia.hasOwnProperty('video')) {
 		objMedia = `<video class="mediaVideo" src="/Sample_Photos/${idPhoto.name}/${galerieMedia.video}" alt="${galerieMedia.alt}" controls>`;
 	}
-
+	
 	elemMaster.innerHTML =  
 	`
 		<div tabindex="0" class="card_galerie" role="dialog" aria-label="galeri de petite carte" >
@@ -444,6 +472,7 @@ function initGalerie(galerieMedia, idPhoto) {
 	`
 	document.querySelector('.galerie_Photographer').appendChild(elemMaster)
 }
+
 const LIGHTBOX =  {
 	lightBox : null,
 	srcEnCourSlider : null,
@@ -456,20 +485,23 @@ const LIGHTBOX =  {
 	videoEnCours : null,
 	indexEnCours : 0
 }
+
 function initLightBox(){
 	LIGHTBOX.lightBox = document.querySelector('.lightBox')
 	LIGHTBOX.lightBox.tabIndex = 0;
 	LIGHTBOX.srcEnCourSlider = document.querySelector('.img-visible-lightBox')
 	LIGHTBOX.srcEnCourSliderVideo = document.querySelector('.video_visible_lightBox')
-	LIGHTBOX.allPicsLightBox = Array.from(document.querySelectorAll(".card_galerie"))
+	LIGHTBOX.allPicsLightBox = Array.from(document.querySelectorAll(".card_galerieMaster"))
 	LIGHTBOX.leftLightBox = document.querySelector('.btnSlide--left')
 	LIGHTBOX.rightLightBox = document.querySelector('.btnSlide--right')
 	LIGHTBOX.fermerLightBox = document.querySelector('.btn-closeLightBox')
-	console.log();
+	console.log(LIGHTBOX.allPicsLightBox);
 }
 
 const SetLightboxSrc = (item) => {
 	let elem = item.querySelector("video");
+	let titreImgLightBox = document.querySelector('.titreImgLightBox')
+
 	LIGHTBOX.srcEnCourSliderVideo.style.display = "none";
 	LIGHTBOX.srcEnCourSlider.style.display = "none";
 	if(elem){
@@ -479,6 +511,10 @@ const SetLightboxSrc = (item) => {
 		elem = item.querySelector("img");
 		LIGHTBOX.srcEnCourSlider.src = elem.src; // image qu'on vient de cliquer
 		LIGHTBOX.srcEnCourSlider.style.display = "block";
+	}
+	if (elem) {
+		console.log(item);
+		titreImgLightBox.textContent = item.Title
 	}
 	return elem;
 }
@@ -497,14 +533,13 @@ function generateLightBoxEvents(){
 			console.log("index ="+LIGHTBOX.indexEnCours,"photo="+LIGHTBOX.srcEnCourSlider.src);
 			LIGHTBOX.indexEnCours = (LIGHTBOX.indexEnCours + 1)%(LIGHTBOX.allPicsLightBox.length);
 			SetLightboxSrc(LIGHTBOX.allPicsLightBox[LIGHTBOX.indexEnCours]);
+			console.log();
 		}
 		if (a.keyCode == 37) {
 			console.log(a.keyCode, "push left");
 			console.log("index ="+LIGHTBOX.indexEnCours,"photo="+LIGHTBOX.srcEnCourSlider.src, "Push keyCode 39 => btn Left");
 			LIGHTBOX.indexEnCours = LIGHTBOX.indexEnCours==0 ? LIGHTBOX.allPicsLightBox.length-1 : LIGHTBOX.indexEnCours-1;
 			SetLightboxSrc(LIGHTBOX.allPicsLightBox[LIGHTBOX.indexEnCours]);
-			// LIGHTBOX.srcEnCourSliderVideo.src = LIGHTBOX.allPicsLightBox[LIGHTBOX.indexEnCours].querySelector("video").src
-
 		}
 	})
 	LIGHTBOX.fermerLightBox.addEventListener('click', (e) => {
@@ -513,16 +548,11 @@ function generateLightBoxEvents(){
 	LIGHTBOX.rightLightBox.addEventListener('click', () => {
 		LIGHTBOX.indexEnCours = (LIGHTBOX.indexEnCours + 1)%(LIGHTBOX.allPicsLightBox.length);
 		SetLightboxSrc(LIGHTBOX.allPicsLightBox[LIGHTBOX.indexEnCours]);
-		// LIGHTBOX.srcEnCourSliderVideo.src = LIGHTBOX.allPicsLightBox[LIGHTBOX.indexEnCours].querySelector("video").src
-
 		console.log("index ="+LIGHTBOX.indexEnCours,"photo="+LIGHTBOX.srcEnCourSlider.src);
 	})
 	LIGHTBOX.leftLightBox.addEventListener('click', () => {
 		LIGHTBOX.indexEnCours = LIGHTBOX.indexEnCours==0 ? LIGHTBOX.allPicsLightBox.length-1 : LIGHTBOX.indexEnCours-1;
 		SetLightboxSrc(LIGHTBOX.allPicsLightBox[LIGHTBOX.indexEnCours]);
-		// LIGHTBOX.srcEnCourSlider.src = LIGHTBOX.allPicsLightBox[LIGHTBOX.indexEnCours].querySelector("img").src;
-		// LIGHTBOX.srcEnCourSliderVideo.src = LIGHTBOX.allPicsLightBox[LIGHTBOX.indexEnCours].querySelector("video").src
-
 		console.log("index ="+LIGHTBOX.indexEnCours,"photo="+LIGHTBOX.srcEnCourSlider.src);
 	})
 }
@@ -534,23 +564,29 @@ function generateMediaLightBoxLinks(){
 		item.listindex=index++;
 	})
 	LIGHTBOX.allPicsLightBox.forEach((item) => {
-		console.log();
 		item.onclick = item.onkeydown = (event) => {
 			if(event.type=="click" || (event.type=="keydown" && event.keyCode==13)){
 				console.log("click  => open lightBox","Item =" , item);
 				LIGHTBOX.lightBox.style.display = "block";
-				// LIGHTBOX.srcEnCourSlider.src = item.querySelector("img").src; // image qu'on vient de cliquer
 				let elem = SetLightboxSrc(item);
-				
+				let titreImgLightBox = document.querySelector('.titreImgLightBox')
+				titreImgLightBox.innerText = elem.alt;
 				LIGHTBOX.photoEnCours = item; // élément HTML de manier générale | élément cliquer
 				LIGHTBOX.indexEnCours = item.listindex; // index de la photo en cours
 				console.log("index=",LIGHTBOX.indexEnCours, "photo =", elem.src);
 				LIGHTBOX.lightBox.focus();
-
-
 			}
 		}
 	})
 }
-
+async function main() {
+	initLightBox();
+	generateLightBoxEvents();
+	getParamID();
+	await loadData();
+	render();
+	formulaire(PHOTOGRAPHER);
+	generateMediaLightBoxLinks();
+}
+// Ne charge le main qu'une fois le HTML chargé.
 window.onload = main;
